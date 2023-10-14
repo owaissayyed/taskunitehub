@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Log In</title>
+</head>
+<body>
+    <div class="video-bg">
+        <video width="320" height="240" autoplay loop muted>
+         <source src="https://assets.codepen.io/3364143/7btrrd.mp4" type="video/mp4">
+       Your browser does not support the video tag.
+       </video>
+       </div> 
+
+
+    <div class="form-wrap">
+		<div class="tabs">
+			<h3 class="signup-tab"><a class="active" href="#signup-tab-content" >Sign Up</a></h3>
+			<h3 class="login-tab"><a href="#login-tab-content" >Login</a></h3>
+		</div><!--.tabs-->
+
+		<div class="tabs-content">
+			<div id="signup-tab-content" class="active">
+				<form class="signup-form" action="" method="post">
+					<input type="email" class="input" id="user_email" autocomplete="off" placeholder="Email">
+					<input type="text" class="input" id="user_name" autocomplete="off" placeholder="Username">
+					<input type="password" class="input" id="user_pass" autocomplete="off" placeholder="Password">
+					<input type="password" class="input" id="user_pass" autocomplete="off" placeholder="Confirm Password">
+					<input type="submit" class="button" value="Sign Up">
+				</form><!--.login-form-->
+				<div class="help-text">
+					<p>By signing up, you agree to our</p>
+					<p><a href="#" class="log-lin">Terms of service</a></p>
+				</div><!--.help-text-->
+                <button type="button" class="btnGoogle" id="login_button" >
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo" style="vertical-align: middle; height: 20px; margin-right: 10px;">
+                    Sign up with Google
+                </button> 
+			</div><!--.signup-tab-content-->
+
+			<div id="login-tab-content">
+				<form class="signup-form" action="" method="post">
+					<input type="text" class="input" id="user_login" autocomplete="off" placeholder="Email or Username">
+					<input type="password" class="input" id="user_pass" autocomplete="off" placeholder="Password">
+					<input type="checkbox" class="checkbox" id="remember_me">
+
+					<input type="submit" class="button" value="Login">
+				</form><!--.login-form-->
+				<div class="help-text">
+					<p><a href="#" class="log-lin">Forget your password?</a></p>
+				</div><!--.help-text-->
+                <button type="button" class="btnGoogle" id="login_button" >
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo" style="vertical-align: middle; height: 20px; margin-right: 10px;">
+                    Login with Google
+                </button> 
+			</div><!--.login-tab-content-->
+		</div><!--.tabs-content-->
+	</div><!--.form-wrap-->
+
+<!-- ... Rest of your HTML code ... -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="module">
+    // Import the necessary Firebase SDK functions
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js"; // Import collection function
+
+    // Firebase configuration
+    const firebaseConfig = {
+    apiKey: "AIzaSyDcsBZNHToafJxvAAkQ2y6bB74bPku-sAE",
+    authDomain: "singnup.firebaseapp.com",
+    projectId: "singnup",
+    storageBucket: "singnup.appspot.com",
+    messagingSenderId: "971102741934",
+    appId: "1:971102741934:web:9b556defb7efce4051143f",
+    measurementId: "G-3ENVSFEC3C"
+  };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+    const db = getFirestore(app);
+
+    // Function to log in with Google and save user data to Firestore
+    function loginWithGoogle() {
+        signInWithPopup(auth, provider).then((result) => {
+            const user = result.user;
+
+            // Create a reference to the Firestore collection "users"
+            const usersCollection = collection(db, "user");
+
+            // Use the user's displayName as the document ID
+            const userDocRef = doc(usersCollection, user.email);
+
+            // Set the data in the Firestore document
+            const userData = {
+                email: user.email,
+                name: user.displayName,
+                photo: user.photoURL,
+                signupTime: user.metadata.creationTime,
+                lastLoginTime: user.metadata.lastSignInTime,
+                uid: user.uid
+            };
+
+// Inside the loginWithGoogle function, after adding user data to Firestore
+setDoc(userDocRef, userData)
+    .then(() => {
+        console.log(`User data for ${user.email} added to Firestore`);
+        // Redirect to homepage.html
+        window.location.href = "homepage.html";
+    })
+    .catch((error) => {
+        console.error("Error adding user data to Firestore:", error);
+    });
+
+
+        }).catch((error) => {
+            console.error("Error during Google login:", error);
+        });
+    }
+
+    // Attach the login function to the button click event
+    window.addEventListener("DOMContentLoaded", (event) => {
+        document.getElementById("login_button").addEventListener("click", loginWithGoogle);
+    });
+
+</script>
+<script>jQuery(document).ready(function($) {
+    var tab = $('.tabs h3 a');
+
+    tab.on('click', function(event) {
+        event.preventDefault();
+        // Remove the 'active' class from all tab links
+        tab.removeClass('active');
+        $(this).addClass('active');
+
+        // Get the target content ID from the href attribute
+        var tab_content = $(this).attr('href');
+        
+        // Hide all tab content divs and then show the selected one
+        $('.tabs-content div').removeClass('active');
+        $(tab_content).addClass('active');
+    });
+});
+</script>
+</body>
+</html>
