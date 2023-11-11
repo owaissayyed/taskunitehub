@@ -3,291 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
     <title>Date, Time, and Weight Input</title>
-    <!-- <style>body {
-        font-family: Arial, sans-serif;
-        background-color: #f0f0f0;
-        height: 100vh;
-        margin: 0;
-    }
-    
-    .data-container {
-        background-color: #fff;
-        padding: 30px;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        text-align: center;
-    }
-    
-    h1 {
-        margin-bottom: 20px;
-    }
-    
-    input[type="date"],
-    input[type="time"],
-    input[type="number"] {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-    
-    button {
-        background-color: #007bff;
-        color: #fff;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-    
-    button:hover {
-        background-color: #0056b3;
-    }
-    </style> -->
+
 </head>
 <body>
-    <!-- <div class="video-bg">
-        <video width="320" height="240" autoplay loop muted>
-         <source src="https://assets.codepen.io/3364143/7btrrd.mp4" type="video/mp4">
-       Your browser does not support the video tag.
-       </video>
-       </div>
-    <a href="#" class="dropdown-toggle">
-        <span class="glyphicon glyphicon-user"></span> 
-        <strong>Kanha Sahu</strong>
-        <span class="glyphicon glyphicon-chevron-down"></span>
-    </a>
-    <ul class="dropdown-menu">
-        <li>
-            <div class="navbar-login">
-                <div class="row">
-                    <div class="col-lg-4">
-                        <p class="text-center">
-                            <span class="glyphicon glyphicon-user icon-size"></span>
-                        </p>
-                    </div>
-                    <div class="col-lg-8">
-                        <p class="text-left"><strong>Kanha Sahu</strong></p>
-                        <p class="text-left small">info@kaslab.in</p>
-                        <p class="text-left">
-                            <a href="#" class="btn btn-primary btn-block btn-sm">Profile</a>
-                        </p>
-                    </div>
-                </div>
+
+
+    
+     <!-- Bottom Navbar  -->
+     <div class="navbar">
+        <div class="menu-icon" onclick="toggleSideMenu()">
+          <i class="fas fa-bars"></i> 
+        </div>
+
+          
+       <div class="greetings"></div> 
+
+        <div class="user-profile">
+
+        </div>
+        </div>
+
+        <!-- Side Menu -->
+        <div class="side-menu">
+            <div class="close-icon" onclick="toggleSideMenu()">
+              <i class="fas fa-times"></i>
             </div>
-        </li>
-        <li class="divider"></li>
-        <li>
-            <div class="navbar-login navbar-login-session">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <p>
-                            <a href="#" class="btn btn-danger btn-block"><span class="glyphicon glyphicon-log-out"></span>&nbsp; Signout</a>
-                        </p>
-                    </div>
-                </div>
+            <!-- <div class="side-menu-cnt">
+            <div class="user-profile"><img src="images/Memory storage-amico.png" alt=""></div>
+            <div class="user-name">Owais Sayyed</div>
+            </div> -->
+            <div class="sidem-logo">
             </div>
-        </li>
-    </ul>
-</li>
-</ul>
+            <ul>
+               <div class="menu-item">
+              <li class="menu-li"><a href="#"><i class="fa-solid fa-star"></i>Star Task</a></li>
+              </div>
+              <div class="menu-item">
+                <li class="menu-li"><a href="#"><i class="fa-solid fa-paintbrush"></i> Theme</a></li>
+                </div>
+                <div class="menu-item">
+                    <li class="menu-li"><a href="#"><i class="fa-solid fa-message"></i>Feedback</a></li>
+                    </div>
+                    <div class="menu-item">
+                        <li class="menu-li"><a href="#"><i class="fa-solid fa-circle-question"></i> FAQ</a></li>
+                        </div>
+                        <div class="menu-item">
+                            <li class="menu-li"><a href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                            </div>
+                        </ul>
+                    </div>
+
+                    
+
+<!-- tab bar -->
+<div class="tb-bar">
+    <div class="tb-item active">
+        <i class="fa-solid fa-list-check"></i>
+        <div class="tb-text">Task</div>
+    </div>
+    <div class="tb-item">
+        <i class="fa-solid fa-user-group"></i>
+        <div class="tb-text">Team</div>
+    </div>
+    <div class="tb-item tb-plus">
+        <i class="fa-solid fa-plus"></i>
+    </div>
+    <div class="tb-item">
+        <i class="fa-regular fa-calendar-days"></i>
+        <div class="tb-text">Calendar</div>
+    </div>
+    <div class="tb-item">
+        <i class="fa-solid fa-user"></i>
+        <div class="tb-text">Mine</div>
+    </div>
 </div>
-</div>
 
-    
-    <div class="user-info">
-        Email: <span id="user-email"></span> <br>
-        Yourlastsigntime: <span id="user-logintime"></span> 
-      
-    <div class="data-container">
-        <p>Enter Current data</p>
-        <input type="date" id="datePicker"  required>
-        <p>Enter Current Time</p>
-        <input type="time" id="timePicker"  required>
-        <p>Enter Your Weight</p>
-        <input type="number" id="weightInput" placeholder="Enter Your Weight" required>
-        <button id="postButton">Post Time</button>
-    </div>
-<button id="logoutButton">Logout</button>
-
-
-    <div class="bottom-navbar">
-        <a href="#" class="nav-icon active">
-            <i class="fas fa-home"></i>
-        </a>
-        <a href="#" class="nav-icon">
-            <i class="fas fa-search"></i>
-        </a>
-        <a href="#" class="nav-icon">
-            <span class="plus-icon">+</span>
-        </a>
-        <a href="#" class="nav-icon">
-            <i class="fas fa-envelope"></i>
-        </a>
-        <a href="profile.html" class="nav-icon">
-            <i class="fas fa-user"></i>
-        </a>
-    </div> 
-<!-- ... (your HTML code) ... -->
-<div class="video-bg">
-    <video width="320" height="240" autoplay loop muted>
-     <source src="https://media.istockphoto.com/id/1659265772/video/abstract-blue-liquid-gradient-animation-4k-gradient-motion-graphic-hd-4k.mp4?s=mp4-640x640-is&k=20&c=jt3xboCKVkF0yTQrZWtZXLnjihoNJNMxofTr79fDdD4=" type="video/mp4">
-   Your browser does not support the video tag.
-   </video>
-   </div>
-
-   <div class="app">
-    <div class="app-logo"><center><h1>TaskUniteHub</h1></center></div>
-    <div class="header">
-     <div class="menu-circle"></div>
-
-     <div class="search-bar">
-      <input type="text" placeholder="Search">
-     </div>
-     <div class="header-profile">
-      <div class="notification">
-       <span class="notification-number">3</span>
-       <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell">
-        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />
-       </svg>
-      </div>
-      <svg viewBox="0 0 512 512" fill="currentColor">
-       <path d="M448.773 235.551A135.893 135.893 0 00451 211c0-74.443-60.557-135-135-135-47.52 0-91.567 25.313-115.766 65.537-32.666-10.59-66.182-6.049-93.794 12.979-27.612 19.013-44.092 49.116-45.425 82.031C24.716 253.788 0 290.497 0 331c0 7.031 1.703 13.887 3.006 20.537l.015.015C12.719 400.492 56.034 436 106 436h300c57.891 0 106-47.109 106-105 0-40.942-25.053-77.798-63.227-95.449z" />
-      </svg>
-      <div id="profile-img">
-      <!-- <img class="profile-img" src="https://images.unsplash.com/photo-1600353068440-6361ef3a86e8?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt=""> -->
-    </div>
-    </div>
-    </div>
-    <div class="wrapper">
-     <div class="left-side">
-      <div class="side-wrapper">
-        <div class="hover-me">
-       <div class="side-title">My projects<span class="add-icon"><i class="fas fa-plus"></i></div>
-       </span>
-       </div>
-       <div class="side-menu">
-        <a href="#">
-         My Work
-        </a>
-        <a href="#">
-         My Work
-         <span class="notification-number updates">3</span>
-        </a>
-       </div>
-      </div>
-
-      <div class="side-wrapper">
-        <div class="hover-me">
-       <div class="side-title">Team Work<span class="add-icon"><i class="fas fa-plus"></i></div>
-       </span>
-       </div>
-       <div class="side-menu">
-        <a href="#">
-         ziel Task
-        </a>
-       </div>
-      </div>
-
-
-     </div>
-     <!-- <div class="main-container">
-
-        <div class="task-container">
-            <h1>To-Do List</h1>
-            <div class="task-input">
-                <input type="text" id="taskInput" placeholder="Add a new task">
-                <button id="addTask"><i class="fas fa-plus"></i></button>
-            </div>
-            <ul id="taskList"></ul>
-    
-            <div class="completed-tasks ">
-                <center><h2>Completed Tasks <i class="fas fa-chevron-down" id="completedTaskDropdown"></i></h2></center>
-                <ul id="completedTaskList"></ul>
-            </div>
-    
-        </div>
-        
-        <div class="modal" id="editModal">
-            <div class="modal-content">
-                <h2>Edit Task</h2>
-                <input type="text" id="editTaskText" placeholder="Edit your task">
-                <button id="saveEdit"><i class="fas fa-save"></i> Save</button>
-                <button id="cancelEdit"><i class="fas fa-times"></i> Cancel</button>
-            </div>
-        </div>
-        
-     </div> -->
-
-     <div class="content-wrapper">
-        <div class="content-wrapper-header">
-         <div class="content-wrapper-context">
-          <div class="content-text">The only way to do great work is to love what you do.</div>
-          <!-- <button class="content-button">Connect</button> -->
-         </div>
-         <img class="content-wrapper-img" src="https://assets.codepen.io/3364143/glass.png" alt="">
-        </div>
-        <div class="content-section">
-         <div class="content-section-title">My Work</div>
-         <ul>
-
-            <li class="adobe-product">
-                <div class="add-task-btn">
-                 Add Task <i class="fas fa-plus"></i>
-                </div>
-                
-               </li>
-
-
-          <li class="adobe-product">
-            <button class="completeTask"><i class="fas fa-check"></i></button>
-           <div class="products">
-
-            code
-           </div>
-           <div class="button-wrapper">
-            <button class="editTask"><i class="fas fa-edit"></i></button>
-            <button class="deleteTask"><i class="fas fa-trash"></i></button>
-           </div>
-          </li>
-
-          <li class="adobe-product">
-            <button class="completeTask"><i class="fas fa-check"></i></button>
-           <div class="products">
-
-            gym
-           </div>
-           <div class="button-wrapper">
-            <button class="editTask"><i class="fas fa-edit"></i></button>
-            <button class="deleteTask"><i class="fas fa-trash"></i></button>
-           </div>
-          </li>
-
-          <li class="adobe-product">
-            <button class="completeTask"><i class="fas fa-check"></i></button>
-           <div class="products">
-
-            work
-           </div>
-           <div class="button-wrapper">
-            <button class="editTask"><i class="fas fa-edit"></i></button>
-            <button class="deleteTask"><i class="fas fa-trash"></i></button>
-           </div>
-          </li>
-         </ul>
-        </div>
-
-       </div>
-        </div>
-       </div>
-    </div>
-    <div class="overlay-app"></div>
-   </div>
 <script type="module">
 
 
@@ -318,8 +111,10 @@ onAuthStateChanged(auth, (user) => {
         location.replace("index.html");
     } else {
         // document.getElementById("user-email").innerHTML = "Hello, " + user.email;
-        // document.getElementById("user-logintime").innerHTML = user.metadata.lastSignInTime;
-        document.getElementById("profile-img").innerHTML = `<img class="profile-img" src="${user.photoURL}" alt="">`;
+        // // document.getElementById("user-logintime").innerHTML = user.metadata.lastSignInTime;
+        // document.getElementById("profile-img").innerHTML = `<img class="profile-img" src="${user.photoURL}" alt="">`;
+        const profileImg = document.querySelector(".user-profile");
+        profileImg.src = user.photoURL || ""; 
     }
 });
 
