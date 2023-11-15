@@ -4,13 +4,21 @@
     box-sizing: border-box;
     font-family: "Poppins",
       sans-serif;
+      user-select: none;
   }
 
+  :root {
+    --primary-color: #6f96f8;
+    --secondary-color: #fff;
+  }
+a{
+  text-decoration: none;
+}
 .navbar {
     width: 100%; 
     display: flex;
     align-items: center;
-    background-color: #6f96f8;
+    background-color: var(--primary-color);
     color: #fff;
     display: flex;
     align-items: center;
@@ -39,7 +47,7 @@
   }
   
   .menu-icon {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
 
   .side-menu {
@@ -47,12 +55,13 @@
     top: 0;
     left: -250px; 
     width: 250px;
-    height: 93.5%;
+    height: 100%;
     background-color: #fff;  
     box-shadow: 10px 0 10px -5px rgba(0, 0, 0, 0.35);
     color: #000;
     transition: left 0.3s;
     z-index: 2;
+    overflow: auto;
   }
 
   .side-user-profile {
@@ -64,9 +73,24 @@
     margin-bottom: 10px;
   }
 
-  .user-name {
-    font-size: 18px;
-    margin-bottom: 20px;
+  .db-section{
+    width: 100%;
+    height: 40px;
+    display: flex;
+    align-items: center;
+  }
+
+  .db-section li{
+    font-size: 1rem;
+    list-style: none;
+    margin-left: 1rem;
+  }
+  .li-dt{
+    width: 12px;
+    height: 12px;
+    background: var(--primary-color);
+    margin-left: 1rem;
+    border-radius: 6px;
   }
 
   .menu-item{
@@ -75,28 +99,21 @@
   
   .menu-item i{
     margin: 1rem;
+    color: var(--primary-color);
   }
 
-  .menu-li {
-    list-style: none;
-    padding: 10px 0;
-  }
+
 
   .menu-li a {
     text-decoration: none;
-    font-size: 1.5rem;
+    font-size: 1rem;
     color: #000;
   }
 
-  .menu-li:hover {
+  .menu-li:hover ,.db-section:hover{
     background-color: #d7d3d3;
   }
 
-  .side-menu-cnt{
-    display: flex;
-        flex-direction: column;
-        align-items: center;
-  }
   
   .close-icon {
         position: absolute;
@@ -107,41 +124,112 @@
         z-index: 1000;
       }
 
-      .sidem-logo{
-        width: 100%;
-        height: 30%;
-      }
 
+      /* Style for the add task popup */
+.popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-content {
+  background: #fff;
+  border-radius: 5px;
+  width: 400px;
+  height: 330px;
+}
+
+.popup-item{
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1.3rem;
+}
+.popup-item:first-child{
+  margin-top: 1rem;
+}
+.popup-item input{
+  width: 70%;
+  height: 2.5rem;
+  font-size: 1rem;
+  padding: 1em 1.2em .5em;
+  background: none;
+  border: none;
+  border-bottom: 2px solid var(--primary-color);
+}
+ input:focus{
+  outline: none;
+  border-bottom: 2px solid var(--primary-color);
+}
+.popup-item label{
+  width: 20%;
+  margin-top: .8rem;
+  font-size: 1.1rem;
+  font-weight: 300;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: inherit;
+  margin-top: 2.8rem;
+}
+
+.cancel-btn{
+  width: 50%;
+  height: 3.5rem;
+  background: #ED213A;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+  border: none;
+}
+
+.add-task-btn{
+  width: 50%;
+  background: var(--primary-color);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--secondary-color);
+  border: none;
+}
 
 .tb-bar {
   width: 100%;
   height: 3rem;
-  position: absolute;
+  position: fixed;
   bottom: 0;
+  left: 0;
+  right: 0;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 50px; /* Add padding to the entire bar */
-  color: #737373; 
+  justify-content: space-around;
+  color: #737373;
+  z-index: 0;
 }
 
 .tb-bar .tb-item {
   display: flex;
-  flex-direction: column; /* Align icon and text vertically */
+  flex-direction: column;
   align-items: center;
 }
 
 .tb-bar .tb-item.tb-start {
-  margin-left: 25px; /* Add space to the left of the first item */
+  margin-left: 25px;
 }
 
 .tb-bar .tb-item.tb-end {
-  margin-right: 25px; /* Add space to the right of the last item */
+  margin-right: 25px;
 }
 
 .tb-bar i{
   font-size: 1.7rem;
+  cursor: pointer;
 }
 
 .tb-bar .active{
@@ -150,14 +238,13 @@
 
 .tb-bar .fa-plus {
   font-size: 2rem;
-  background: #6f96f8;
-  padding: 12px; /* Add padding for better visual appearance */
-  border-radius: 50%; /* Make the plus icon circular */
-  color: #fff; /* Set text color to white */
-  margin-top: -30px; /* Adjust the position upwards */
+  background: var(--primary-color);
+  padding: 12px; 
+  border-radius: 50%; 
+  color: #fff; 
+  margin-top: -30px; 
 }
 
-/* Add this CSS for the waving hand animation */
 @keyframes wave {
   0% { transform: rotate(0deg); }
   25% { transform: rotate(20deg); }
@@ -166,5 +253,6 @@
 
 .waving-hand {
   display: inline-block;
-  animation: wave 1s infinite; /* Adjust the animation duration and iteration count as needed */
+  animation: wave 1s infinite;
 }
+

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous">
+
+  <title>Your To-Do App</title>
+  <style>
+    .db-section {
+      border: 1px solid;
+      margin-bottom: 10px;
+      padding: 10px;
+      cursor: pointer;
+    }
+    .db-section li {
+      list-style: none;
+    }
+    .li-dt {
+      width: 12px;
+      height: 12px;
+      background: #000;
+      margin-left: 1rem;
+      border-radius: 6px;
+      display: inline-block; 
+    }
+    .selected {
+      background-color: lightgray; 
+    }
+
+
+  </style>
+<script type="module">
+// Firebase imports and configuration
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCl1-hnDwFswTb_B5EsLsuAWt3zHhCiRZ4",
+  authDomain: "taskunitehub.firebaseapp.com",
+  projectId: "taskunitehub",
+  storageBucket: "taskunitehub.appspot.com",
+  messagingSenderId: "559734098072",
+  appId: "1:559734098072:web:1cc37be38c85d2932ce8ed",
+  measurementId: "G-TVFYD536JH"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth();
+const provider = new GoogleAuthProvider();
+const db = getFirestore(app);
+let user;
+
+// Check user authentication status
+onAuthStateChanged(auth, (currentUser) => {
+  if (currentUser) {
+    user = currentUser;
+    console.log('You are logged in:', user.email);
+    ensureDefaultSection();
+    displaySections();
+  } else {
+    location.replace("login.html");
+  }
+});
+
+// Ensure the default section exists
+async function ensureDefaultSection() {
+  const defaultSectionName = "All";
+
+  const allSectionQuery = query(collection(db, "user", user.uid, "sections"), where("name", "==", defaultSectionName));
+  const allSectionSnapshot = await getDocs(allSectionQuery);
+
+  if (allSectionSnapshot.empty) {
+    await addDoc(collection(db, "user", user.uid, "sections"), { name: defaultSectionName });
+  }
+}
+
+// Add a new section
+window.addSection = async function () {
+  const sectionName = document.getElementById("sectionName").value.trim();
+  if (sectionName !== "") {
+    try {
+      const sectionRef = await addDoc(collection(db, "user", user.uid, "sections"), { name: sectionName });
+
+      // Create "tasks" subcollection for the new section
+      await addDoc(collection(db, "user", user.uid, "sections", sectionRef.id, "tasks"), {
+        title: "Task 1",
+      });
+
+      document.getElementById("sectionName").value = "";
+    } catch (error) {
+      console.error("Error adding section:", error);
+    }
+  }
+}
+
+// Add a new task to the selected section
+window.addTask = async function () {
+  const taskName = document.getElementById("taskName").value.trim();
+  const selectedSection = document.querySelector('.selected');
+  const sectionId = selectedSection ? selectedSection.id.replace('dbSection_', '') : null;
+
+  if (taskName !== "" && sectionId) {
+    try {
+      // Add the task to the specified section
+      await addDoc(collection(db, "user", user.uid, "sections", sectionId, "tasks"), {
+        title: taskName,
+      });
+
+      // Clear the task input
+      document.getElementById("taskName").value = "";
+    } catch (error) {
+      console.error("Error adding task:", error);
+    }
+  }
+}
+
+function displaySections() {
+      const dbSectionContainer = document.getElementById("dbSectionsContainer");
+
+      onSnapshot(query(collection(db, "user", user.uid, "sections"), orderBy("name")), (snapshot) => {
+        dbSectionContainer.innerHTML = ""; // Clear previous sections
+
+        snapshot.forEach((doc) => {
+          const sectionName = doc.data().name;
+          const sectionId = doc.id;
+
+          // Create a div for each section in dbSectionContainer
+          const dbSectionDiv = document.createElement("div");
+          dbSectionDiv.className = "db-section";
+          dbSectionDiv.id = `dbSection_${sectionId}`;
+          dbSectionDiv.addEventListener('click', () => selectSection(sectionId)); // Add click event listener
+
+          // Create a div with class "li-dt" inside each dbSectionDiv
+          const liDtDiv = document.createElement("div");
+          liDtDiv.className = "li-dt";
+
+          // Create an ul and li for each section
+          const ulElement = document.createElement("ul");
+          const liElement = document.createElement("li");
+          liElement.textContent = sectionName;
+
+          // Append li to ul, and ul to div
+          ulElement.appendChild(liElement);
+          dbSectionDiv.appendChild(liDtDiv);
+          dbSectionDiv.appendChild(ulElement);
+
+// Add ellipsis icon and section actions
+const actionsContainer = document.createElement("div");
+actionsContainer.className = "actions-container section-actions"; 
+
+
+const ellipsisIcon = document.createElement("div");
+ellipsisIcon.innerHTML = '<i class="fa-solid fa-ellipsis"></i>';
+ellipsisIcon.addEventListener('click', (event) => {
+  event.stopPropagation(); 
+  toggleSectionActions(sectionId);
+});
+
+
+actionsContainer.appendChild(ellipsisIcon);
+dbSectionDiv.appendChild(actionsContainer);
+
+
+          // Append the div to dbSectionContainer
+          dbSectionContainer.appendChild(dbSectionDiv);
+
+          // Create a task container for each section
+          const taskContainer = document.createElement("div");
+          taskContainer.id = `taskContainer_${sectionId}`;
+          dbSectionContainer.appendChild(taskContainer);
+
+          // Display tasks for each section
+          displayTasks(sectionId, taskContainer);
+        });
+      });
+    }
+
+// Select and display tasks for the clicked section
+function selectSection(sectionId) {
+  // Deselect all sections
+  document.querySelectorAll('.db-section').forEach((div) => {
+    div.classList.remove('selected');
+  });
+
+  // Select the clicked section
+  const selectedSection = document.getElementById(`dbSection_${sectionId}`);
+  selectedSection.classList.add('selected');
+
+  // Hide all task containers
+  document.querySelectorAll('[id^="taskContainer_"]').forEach((container) => {
+    container.style.display = 'none';
+  });
+
+  // Display tasks for the selected section
+  const taskContainer = document.getElementById(`taskContainer_${sectionId}`);
+  taskContainer.style.display = 'block';
+  displayTasks(sectionId, taskContainer);
+}
+
+// Display tasks for a specific section
+function displayTasks(sectionId, taskContainer) {
+  // Query tasks for the specified section
+  const taskQuery = query(collection(db, "user", user.uid, "sections", sectionId, "tasks"));
+  onSnapshot(taskQuery, (taskSnapshot) => {
+    taskContainer.innerHTML = ""; // Clear previous tasks
+
+    taskSnapshot.forEach((taskDoc) => {
+      const taskName = taskDoc.data().title;
+
+      // Create a div for each task
+      const taskDiv = document.createElement("div");
+      taskDiv.textContent = taskName;
+
+      // Append the task div to the task container
+      taskContainer.appendChild(taskDiv);
+    });
+  });
+}
+
+function toggleSectionActions(sectionId) {
+  const sectionDiv = document.getElementById(`dbSection_${sectionId}`);
+  const sectionActions = sectionDiv.querySelector('.section-actions');
+
+  // Toggle the display property
+  sectionActions.style.display = sectionActions.style.display === 'block' ? 'none' : 'block';
+
+  // Close other open section actions
+  document.querySelectorAll('.section-actions').forEach((actions) => {
+    if (actions !== sectionActions) {
+      actions.style.display = 'none';
+    }
+  });
+}
+
+
+
+window.deleteSection = async function (sectionId) {
+  if (sectionId) {
+    try {
+      // Delete the section document
+      await deleteDoc(doc(db, "user", user.uid, "sections", sectionId));
+
+      // Remove the associated tasks subcollection
+      const tasksQuery = query(collection(db, "user", user.uid, "sections", sectionId, "tasks"));
+      const tasksSnapshot = await getDocs(tasksQuery);
+
+      tasksSnapshot.forEach(async (taskDoc) => {
+        await deleteDoc(doc(db, "user", user.uid, "sections", sectionId, "tasks", taskDoc.id));
+      });
+    } catch (error) {
+      console.error("Error deleting section:", error);
+    }
+  }
+};
+
+
+
+// Add edit and delete section buttons
+function addSectionActions(parent, sectionId) {
+  const sectionActions = document.createElement("div");
+  sectionActions.className = "section-actions";
+  sectionActions.style.display = 'none';
+
+  const editButton = document.createElement("button");
+  editButton.textContent = "Edit Section";
+  editButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    editSection(sectionId);
+  });
+
+  const deleteButton = document.createElement("button");
+  deleteButton.textContent = "Delete Section";
+  deleteButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    deleteSection(sectionId);
+  });
+
+  sectionActions.appendChild(editButton);
+  sectionActions.appendChild(deleteButton);
+
+  parent.appendChild(sectionActions);
+}
+
+
+
+</script>
+</head>
+<body>
+  <div class="add-section-form">
+    <label for="sectionName">Section Name:</label>
+    <input type="text" id="sectionName" required>
+    <button onclick="addSection()">Add Section</button>
+  </div>
+
+  <!-- Form for adding a new task -->
+  <div class="add-task-form">
+    <label for="taskName">Task Name:</label>
+    <input type="text" id="taskName" required>
+    <button onclick="addTask()">Add Task</button>
+    <div id="dbSectionsContainer" class="section-container"></div> <!-- Display section buttons here -->
+
+  </div>
+
+  <!-- Container for displaying tasks -->
+  <div id="taskContainer" class="section-task"></div>
+</body>
+</html>

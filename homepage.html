@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <link rel="stylesheet" href="style.css">
     <title>Date, Time, and Weight Input</title>
 
@@ -35,28 +37,65 @@
             <div class="user-profile"><img src="images/Memory storage-amico.png" alt=""></div>
             <div class="user-name">Owais Sayyed</div>
             </div> -->
-            <div class="sidem-logo">
-            </div>
+
             <ul>
+
+                <div id="dbSectionsContainer"></div><hr>
+
+
                <div class="menu-item">
               <li class="menu-li"><a href="#"><i class="fa-solid fa-star"></i>Star Task</a></li>
               </div>
+              <a href="theme.html">
               <div class="menu-item">
-                <li class="menu-li"><a href="#"><i class="fa-solid fa-paintbrush"></i> Theme</a></li>
-                </div>
+                <li class="menu-li"><i class="fa-solid fa-paintbrush"></i> Theme</li>
+                </div></a><hr>
                 <div class="menu-item">
-                    <li class="menu-li"><a href="#"><i class="fa-solid fa-message"></i>Feedback</a></li>
+                    <li class="menu-li"><a href="#"><i class="fa-solid fa-message"></i>Feedback</a><i class="fa-solid fa-ellipsis"></i></li>
                     </div>
                     <div class="menu-item">
-                        <li class="menu-li"><a href="#"><i class="fa-solid fa-circle-question"></i> FAQ</a></li>
+                        <li class="menu-li"><a href="#"><i class="fa-solid fa-circle-question"></i> FAQ</a><i class="fa-solid fa-ellipsis"></i></li>
                         </div>
                         <div class="menu-item">
-                            <li class="menu-li"><a href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                            <li class="menu-li"><a href="#"><i class="fa-solid fa-gear"></i> Settings</a><i class="fa-solid fa-ellipsis"></i></li>
                             </div>
                         </ul>
                     </div>
 
                     
+                    <!-- <button id="logoutButton">logout</button> -->
+
+                    <!-- User Select Section Or create Section -->
+
+
+<!-- Popup for adding a task -->
+<div class="popup" id="addTaskPopup">
+    <div class="popup-content">
+       <center><h2 style="margin-top: 1rem; font-size: 2rem;">Add Task</h2></center> 
+        <!-- Form for adding a task -->
+        <form id="taskForm">
+          <div class="popup-item">
+            <label for="taskTitle">Title:</label>
+            <input type="text" id="taskTitle" align="center" name="taskTitle" required placeholder="Add Task">
+            </div>
+
+            <div class="popup-item">
+            <label for="taskTime">Time:</label>
+            <input type="text" id="taskTime" name="taskTime" required>
+            </div>
+
+            <div class="popup-item">
+            <label for="taskCalendar">Calendar:</label>
+            <input type="text" id="taskCalendar" name="taskCalendar" required>
+            </div>
+
+            <div class="btn-container">
+                <button class="cancel-btn" type="button" onclick="closePopup()">Cancel</button>
+                <button class="add-task-btn" type="button" onclick="addTask()">Add Task</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- tab bar -->
 <div class="tb-bar">
@@ -68,8 +107,8 @@
         <i class="fa-solid fa-user-group"></i>
         <div class="tb-text">Team</div>
     </div>
-    <div class="tb-item tb-plus">
-        <i class="fa-solid fa-plus"></i>
+    <div class="tb-item tb-plus" id="addTaskBtn">
+        <i class="fa-solid fa-plus" id=""></i>
     </div>
     <div class="tb-item">
         <i class="fa-regular fa-calendar-days"></i>
@@ -81,88 +120,137 @@
     </div>
 </div>
 
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
 
-
-// Import the necessary Firebase SDK functions
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js"; 
-
-    // Firebase configuration
     const firebaseConfig = {
-    apiKey: "AIzaSyDcsBZNHToafJxvAAkQ2y6bB74bPku-sAE",
-    authDomain: "singnup.firebaseapp.com",
-    projectId: "singnup",
-    storageBucket: "singnup.appspot.com",
-    messagingSenderId: "971102741934",
-    appId: "1:971102741934:web:9b556defb7efce4051143f",
-    measurementId: "G-3ENVSFEC3C"
-  };
+      apiKey: "AIzaSyCl1-hnDwFswTb_B5EsLsuAWt3zHhCiRZ4",
+      authDomain: "taskunitehub.firebaseapp.com",
+      projectId: "taskunitehub",
+      storageBucket: "taskunitehub.appspot.com",
+      messagingSenderId: "559734098072",
+      appId: "1:559734098072:web:1cc37be38c85d2932ce8ed",
+      measurementId: "G-TVFYD536JH"
+    };
 
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+    const db = getFirestore(app);
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore(app);
+    let user; // Declare user variable in a broader scope
 
-onAuthStateChanged(auth, (user) => {
-    if (!user) {
-        location.replace("index.html");
-    } else {
-        // document.getElementById("user-email").innerHTML = "Hello, " + user.email;
-        // // document.getElementById("user-logintime").innerHTML = user.metadata.lastSignInTime;
-        // document.getElementById("profile-img").innerHTML = `<img class="profile-img" src="${user.photoURL}" alt="">`;
-        const profileImg = document.querySelector(".user-profile");
-        profileImg.src = user.photoURL || ""; 
-    }
-});
-
-document.getElementById("logoutButton").addEventListener("click", () => {
-        signOut(auth)
-            .then(() => {
-                location.replace("index.html");
-            })
-            .catch((error) => {
-                console.error("Error signing out:", error);
-            });
+    onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        user = currentUser; // Assign user to the broader scope variable
+        console.log('you login', user.email);
+      } else {
+        location.replace("login.html");
+      }
     });
 
-// Function to save date, time, and weight to Firestore
-document.getElementById("postButton").addEventListener("click", () => {
-    const date = document.getElementById("datePicker").value;
-    const time = document.getElementById("timePicker").value;
-    const weight = document.getElementById("weightInput").value;
-    const user = auth.currentUser; // Get the current user
+//section from database 
 
-    if (user) {
-        const userEmail = user.email;
+onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        user = currentUser;
+        console.log('you login', user.email);
+        ensureDefaultSection();
+        displaySections();
+      } else {
+        location.replace("login.html");
+      }
 
-        // Create a reference to the "homepage" collection in Firestore
-        const homepageCollection = doc(db, "homepage", userEmail);
+          // for greetings
+    const greetingsElement = document.querySelector(".greetings");
+const userDisplayName = user.displayName;
+const currentTime = new Date().getHours();
 
-        // Set the data in the Firestore document
-        setDoc(homepageCollection, {
-            date: date,
-            time: time,
-            weight: weight
-        })
-        .then(() => {
-            console.log("Data saved to Firestore");
-        })
-        .catch((error) => {
-            console.error("Error saving data to Firestore: ", error);
-        });
-    } else {
-        console.error("User not logged in.");
+let greetingText = "";
+
+if (currentTime < 12) {
+    greetingText = "Good Morning," ;
+} else if (currentTime < 18) {
+    greetingText = "Good Afternoon, ";
+} else {
+    greetingText = "Good Evening,";
+}
+
+// Adding the shaking emoji using innerHTML
+greetingsElement.innerHTML = `${greetingText} ${userDisplayName}<span class="waving-hand">👋</span>`;
+
+    });
+
+    async function ensureDefaultSection() {
+      const defaultSectionName = "All";
+
+      // Check if the "All" section exists
+      const allSectionQuery = query(collection(db, "user", user.uid, "sections"), where("name", "==", defaultSectionName));
+      const allSectionSnapshot = await getDocs(allSectionQuery);
+
+      if (allSectionSnapshot.empty) {
+        // If "All" section doesn't exist, create it
+        await addDoc(collection(db, "user", user.uid, "sections"), { name: defaultSectionName });
+      }
     }
-});
+
+    window.addSection = async function () {
+      const sectionName = document.getElementById("sectionName").value.trim();
+      if (sectionName !== "") {
+        try {
+          await addDoc(collection(db, "user", user.uid, "sections"), { name: sectionName });
+          document.getElementById("sectionName").value = "";
+        } catch (error) {
+          console.error("Error adding section:", error);
+        }
+      }
+    }
+
+    function displaySections() {
+      const dbSectionContainer = document.getElementById("dbSectionsContainer");
+
+      onSnapshot(query(collection(db, "user", user.uid, "sections"), orderBy("name")), (snapshot) => {
+        dbSectionContainer.innerHTML = "";
+
+        snapshot.forEach((doc) => {
+          const sectionName = doc.data().name;
+          // Create a new div for each section in dbSectionContainer
+          const dbSectionDiv = document.createElement("div");
+          dbSectionDiv.className = "db-section";
+
+          // Create a div with class "li-dt" inside each dbSectionDiv
+          const liDtDiv = document.createElement("div");
+          liDtDiv.className = "li-dt";
+
+          // Create an ul and li for each section
+          const ulElement = document.createElement("ul");
+          const liElement = document.createElement("li");
+          liElement.textContent = sectionName;
+
+          // Append li to ul, and ul to div
+          ulElement.appendChild(liElement);
+          dbSectionDiv.appendChild(liDtDiv); // Append li-dt div to dbSectionDiv
+          dbSectionDiv.appendChild(ulElement);
+
+          // Append the div to dbSectionContainer
+          dbSectionContainer.appendChild(dbSectionDiv);
+        });
+      });
+    }
 
 
 </script>
 <script src="script.js"></script>
 
-<!-- ... (rest of your HTML) ... -->
 
     
 </body>
